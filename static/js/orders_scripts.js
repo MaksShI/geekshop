@@ -63,10 +63,8 @@ window.onload = function () {
 
 $('.order_form select').change(function () {
    var target = event.target;
-   orderitem_num = parseInt(target.name.replace('orderitems-', '').\
-                                        replace('-product', ''));
+   orderitem_num = parseInt(target.name.replace('orderitems-', '').replace('-product', ''));
    var orderitem_product_pk = target.options[target.selectedIndex].value;
-
    if (orderitem_product_pk) {
        $.ajax({
            url: "/order/product/" + orderitem_product_pk + "/price/",
