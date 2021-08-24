@@ -63,8 +63,9 @@ window.onload = function () {
 
 $('.order_form select').change(function () {
    var target = event.target;
-   orderitem_num = parseInt(target.name.replace('orderitems-', '').replace('-quantity', ''));
+   orderitem_num = parseInt(target.name.replace('orderitems-', '').replace('-product', ''));
    var orderitem_product_pk = target.options[target.selectedIndex].value;
+
    if (orderitem_product_pk) {
        $.ajax({
            url: "/order/product/" + orderitem_product_pk + "/price/",
@@ -85,11 +86,11 @@ $('.order_form select').change(function () {
                        current_tr.find('input[type="number"]').val(0);
                    }
                    orderSummaryRecalc();
-                   }
-               },
-           });
-       }
-   });
+               }
+           },
+       });
+   }
+});
 
     function orderSummaryRecalc() {
         for (var i=0; i < TOTAL_FORMS; i++) {
