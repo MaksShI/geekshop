@@ -75,8 +75,7 @@ $('.order_form select').change(function () {
                    if (isNaN(quantity_arr[orderitem_num])) {
                        quantity_arr[orderitem_num] = 0;
                    }
-                   var price_html = '<span>' + data.price.toString().replace('.', ',') +\
-                                    '</span> руб';
+                   var price_html = '<span>' + data.price.toString().replace('.', ',') +'</span> руб';
                    var current_tr = $('.order_form table').find('tr:eq(' + (orderitem_num + 1) + ')');
 
 
