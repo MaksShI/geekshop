@@ -7,6 +7,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 from django.core.cache import cache
 
+JSON_PATH = 'mainapp/json'
+
 
 def get_links_menu():
     if settings.LOW_CACHE:
@@ -81,9 +83,6 @@ def get_products_in_category_orederd_by_price(pk):
         return Product.objects.filter(category__pk=pk, is_active=True, category__is_active=True).order_by('price')
 
 
-JSON_PATH = 'mainapp/json'
-
-
 def load_from_json(file_name):
     with open(os.path.join(JSON_PATH, file_name + '.json'), 'r') as infile:
         return json.load(infile)
@@ -97,28 +96,26 @@ def get_basket(user):
 
 
 def get_hot_product():
-    products = Product.objects.filter(is_active=True, category__is_active=True)
+    products = get_products()
 
     return random.sample(list(products), 1)[0]
 
 
-def get_same_products(hot_product):
-    same_products = Product.objects.filter(category=hot_product.category, is_active=True).exclude(pk=hot_product.pk)[:3]
-
-    return same_products
-
-
 def main(request):
     title = 'главная'
-
-    products = Product.objects.filter(is_active=True, category__is_active=True).select_related('category')[:3]
-
+    products = get_products()[:3]
     content = {
         'title': title,
         'products': products,
     }
 
     return render(request, 'mainapp/index.html', content)
+
+
+def get_same_products(hot_product):
+    same_products = Product.objects.filter(category=hot_product.category, is_active=True).exclude(pk=hot_product.pk)[:3]
+
+    return same_products
 
 
 def products(request, pk=None, page=1):
@@ -132,11 +129,10 @@ def products(request, pk=None, page=1):
                 'pk': 0,
                 'name': 'все'
             }
-            products = Product.objects.filter(is_active=True, category__is_active=True).order_by('price')
+            products = get_products_orederd_by_price()
         else:
-            category = get_object_or_404(ProductCategory, pk=pk)
-            products = Product.objects.filter(category__pk=pk, is_active=True, category__is_active=True).order_by(
-                'price')
+            category = get_category(pk)
+            products = get_products_in_category_orederd_by_price(pk)
 
         paginator = Paginator(products, 2)
         try:
@@ -170,9 +166,8 @@ def products(request, pk=None, page=1):
 
 def product(request, pk):
     title = 'продукты'
-    links_menu = ProductCategory.objects.filter(is_active=True)
-
-    product = get_object_or_404(Product, pk=pk)
+    links_menu = get_links_menu()
+    product = get_product(pk)
 
     content = {
         'title': title,
@@ -185,9 +180,14 @@ def product(request, pk):
 
 def contact(request):
     title = 'о нас'
-
-    locations = load_from_json('contact__locations')
-
+    if settings.LOW_CACHE:
+        key = f'locations'
+        locations = cache.get(key)
+        if locations is None:
+            locations = load_from_json('contact__locations')
+            cache.set(key, locations)
+    else:
+        locations = load_from_json('contact__locations')
     content = {
         'title': title,
         'locations': locations,
