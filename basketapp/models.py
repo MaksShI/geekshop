@@ -4,6 +4,7 @@ from mainapp.models import Product
 
 
 class Basket(models.Model):
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(verbose_name='количество', default=0)
@@ -15,21 +16,21 @@ class Basket(models.Model):
 
     product_cost = property(_get_product_cost)
 
-    @cached_property
-    def get_items_cached(self):
-        return self.user.basket.select_related()
-
     def _get_total_quantity(self):
         "return total quantity for user"
-        # _items = Basket.objects.filter(user=self.user)
-        _items = self.get_items_cached
-        return sum(list(map(lambda x: x.quantity, _items)))
+        _items = Basket.objects.filter(user=self.user)
+        _totalquantity = sum(list(map(lambda x: x.quantity, _items)))
+        return _totalquantity
+
+    total_quantity = property(_get_total_quantity)
 
     def _get_total_cost(self):
         "return total cost for user"
-        # _items = Basket.objects.filter(user=self.user)
-        _items = self.get_items_cached
-        return sum(list(map(lambda x: x.product_cost, _items)))
+        _items = Basket.objects.filter(user=self.user)
+        _totalcost = sum(list(map(lambda x: x.product_cost, _items)))
+        return _totalcost
+
+    total_cost = property(_get_total_cost)
 
     @staticmethod
     def get_items(user):
@@ -37,8 +38,7 @@ class Basket(models.Model):
 
     @staticmethod
     def get_product(user, product):
-        return user.basket.select_related().order_by('product__category')
-        # return Basket.objects.filter(user=user, product=product)
+        return Basket.objects.filter(user=user, product=product)
 
     @staticmethod
     def get_products_quantity(cls, user):
@@ -47,3 +47,4 @@ class Basket(models.Model):
         [basket_items_dic.update({item.product: item.quantity}) for item in basket_items]
 
         return basket_items_dic
+
