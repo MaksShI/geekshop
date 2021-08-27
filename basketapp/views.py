@@ -18,7 +18,7 @@ def basket(request):
     }
     return render(request, 'basketapp/basket.html', content)
 
- 
+
 @login_required
 def basket_add(request, pk):
     if 'login' in request.META.get('HTTP_REFERER'):
@@ -28,16 +28,16 @@ def basket_add(request, pk):
     if not basket:
         basket = Basket(user=request.user, product=product)
     basket.quantity += 1
-    basket.save()
+    basket.quantity.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    
+
 
 @login_required
 def basket_remove(request, pk):
     basket_record = get_object_or_404(Basket, pk=pk)
     basket_record.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    
+
 
 @login_required
 def basket_edit(request, pk, quantity):
@@ -55,4 +55,3 @@ def basket_edit(request, pk, quantity):
         }
         result = render_to_string('basketapp/includes/inc_basket_list.html', content)
         return JsonResponse({'result': result})
-        
