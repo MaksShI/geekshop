@@ -108,6 +108,7 @@ class OrderItemsUpdate(UpdateView):
             self.object = form.save()
             if orderitems.is_valid():
                 orderitems.instance = self.object
+                orderitems.save()
         if self.object.get_total_cost() == 0:
             self.object.delete()
 
@@ -129,18 +130,18 @@ def order_forming_complete(request, pk):
 
 @receiver(pre_save, sender=OrderItem)
 @receiver(pre_save, sender=Basket)
-def product_quantity_update_on_save(sender, update_fields, instance, **kwargs):
-    # if update_fields is 'quantity' or 'product':
-    if instance.pk:
-        instance.product.quantity -= instance.quantity - sender.objects.get(instance.pk).quantity
-    else:
-        instance.product.quantity -= instance.quantity
+def product_quantity_update_save(sender, update_fields, instance, **kwargs):
+    if update_fields is 'quantity' or 'product':
+        if instance.pk:
+            instance.product.quantity -= instance.quantity - sender.objects.get(instance.pk).quantity
+        else:
+            instance.product.quantity -= instance.quantity
     instance.product.save()
 
 
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
-def product_quantity_update_on_delete(sender, instance, **kwargs):
+def product_quantity_update_delete(sender, instance, **kwargs):
     instance.product.quantity += instance.quantity
     instance.product.save()
 
