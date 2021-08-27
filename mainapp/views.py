@@ -120,7 +120,7 @@ def get_same_products(hot_product):
 
 def products(request, pk=None, page=1):
     title = 'продукты'
-    links_menu = ProductCategory.objects.filter(is_active=True)
+    links_menu = get_links_menu()
     basket = get_basket(request.user)
 
     if pk is not None:
