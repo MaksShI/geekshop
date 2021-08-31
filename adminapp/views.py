@@ -12,7 +12,8 @@ from authapp.forms import ShopUserRegisterForm
 from authapp.models import ShopUser
 from mainapp.models import Product, ProductCategory
 from .forms import ProductEditForm, ShopUserAdminEditForm
-
+from django.db.models import F, When, Case, DecimalField, IntegerField
+from datetime import timedelta
 
 class UsersListView(ListView):
     model = ShopUser
