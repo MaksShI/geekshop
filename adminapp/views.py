@@ -13,7 +13,7 @@ from authapp.models import ShopUser
 from mainapp.models import Product, ProductCategory
 from .forms import ProductEditForm, ShopUserAdminEditForm
 from django.db.models import F, When, Case, DecimalField, IntegerField
-from adminapp.form import ProductCategoryEditForm
+from adminapp.forms import ProductCategoryEditForm
 
 class UsersListView(ListView):
     model = ShopUser
