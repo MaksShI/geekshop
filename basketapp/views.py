@@ -3,6 +3,7 @@ from basketapp.models import Basket
 from mainapp.models import Product
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.db.models import F, When, Case, DecimalField, IntegerField
 
 from django.template.loader import render_to_string
 from django.http import JsonResponse
@@ -29,7 +30,7 @@ def basket_add(request, pk):
     product = get_object_or_404(Product, pk=pk)
     old_basket_item = Basket.get_product(user=request.user, product=product)
     if old_basket_item:
-        old_basket_item[0].quantity += 1
+        old_basket_item[0].quantity = F('quantity') + 1
         old_basket_item[0].save()
 
         update_queries = list(filter(lambda x: 'UPDATE' in x['sql'], connection.queries))

@@ -19,7 +19,7 @@
     </li>
     <li>
         {% if user.is_authenticated %}
-            
+
         {% else %}
         <a href="{% url 'auth:login' %}">войти</a>
         {% endif %}
