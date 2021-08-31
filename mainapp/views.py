@@ -2,6 +2,7 @@ import datetime, random, os, json
 from django.shortcuts import render, get_object_or_404
 from mainapp.models import ProductCategory, Product
 from basketapp.models import Basket
+from django.views.decorators.cache import cache_page
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
@@ -164,7 +165,8 @@ def products(request, pk=None, page=1):
     return render(request, 'mainapp/products.html', content)
 
 
-def product(request, pk):
+@cache_page(3600)
+def product(request, pk=None, page=1):
     title = 'продукты'
     links_menu = get_links_menu()
     product = get_product(pk)
