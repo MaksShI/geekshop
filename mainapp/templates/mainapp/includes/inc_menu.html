@@ -17,6 +17,13 @@
             контакты
         </a>
     </li>
+    <li>
+        {% if user.is_authenticated %}
+            
+        {% else %}
+        <a href="{% url 'auth:login' %}">войти</a>
+        {% endif %}
+    </li>
     {% if user.is_authenticated %}
     <li>
         <div class="dropdown">
